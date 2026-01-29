@@ -1,0 +1,28 @@
+.footer {
+  margin-top: 60px;
+  padding: 40px;
+  text-align: center;
+  background: #111827;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.footer-links {
+  margin: 20px 0;
+}
+
+.footer-links a {
+  margin: 0 12px;
+  color: white;
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+.footer-copy {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #d1d5db;
+}
