@@ -43,11 +43,22 @@ const ChatBot = () => {
     try {
       const history = messages.concat(userMsg).map((m) => ({ role: m.role, content: m.text }));
       const data = await sendChatMessage(userMsg.text, history);
-      const replyText = data?.reply || data?.message || "Lo siento, no obtuve respuesta.";
+
+      let replyText = "Lo siento, no obtuve respuesta.";
+
+      if (!data) {
+        replyText = "No hay respuesta del servidor.";
+      } else if (data.error) {
+        replyText = `Error del servidor: ${data.error}. Posibles causas: servidor no configurado con OpenAI, sin créditos, o problema de red.`;
+      } else {
+        replyText = data.reply || data.message || replyText;
+      }
+
       const replyMsg = { role: "assistant", text: replyText, time: new Date().toISOString() };
       setMessages((prev) => [...prev, replyMsg]);
     } catch (err) {
-      setMessages((prev) => [...prev, { role: "assistant", text: "Error de conexión. Intenta de nuevo.", time: new Date().toISOString() }]);
+      const replyMsg = { role: "assistant", text: "Error inesperado. Intenta de nuevo más tarde.", time: new Date().toISOString() };
+      setMessages((prev) => [...prev, replyMsg]);
     } finally {
       setLoading(false);
     }
