@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Courses from "./pages/Courses";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ChatBot from "./pages/ChatBot";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import "./App.css";
@@ -16,6 +17,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/courses" element={<Courses />} />
+        <Route path="/chatbot" element={<ChatBot />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route 

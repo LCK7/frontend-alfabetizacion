@@ -38,11 +38,10 @@ export default function GuidedTour() {
   const [showModal, setShowModal] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [hasSeenTour, setHasSeenTour] = useState(false);
 
-  // Mostrar modal cada vez que entra a la página
   useEffect(() => {
-    setTimeout(() => setShowModal(true), 300);
+    const timer = setTimeout(() => setShowModal(true), 300);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleStartTour = () => {
@@ -50,11 +49,6 @@ export default function GuidedTour() {
     setIsActive(true);
     setCurrentStep(0);
     localStorage.setItem("tourSeen", "true");
-  };
-
-  const handleViewGuide = () => {
-    setShowModal(false);
-    // Mostrar información sin activar tour interactivo
   };
 
   const handleNextStep = () => {
@@ -80,27 +74,23 @@ export default function GuidedTour() {
     setShowModal(false);
   };
 
-  // Scroll automático al elemento cuando cambia el paso
   useEffect(() => {
     if (isActive) {
       const step = TOUR_STEPS[currentStep];
       const targetElement = document.querySelector(step.target);
       
       if (targetElement) {
-        // Esperar un poco para que se renderice
         setTimeout(() => {
-          const rect = targetElement.getBoundingClientRect();
-          const elementTop = rect.top + window.scrollY;
-          const elementHeight = rect.height;
-          const windowHeight = window.innerHeight;
-          
-          // Calcula el scroll para que el elemento esté centrado
-          const scrollTop = elementTop - (windowHeight / 2) + (elementHeight / 2);
-          
-          window.scrollTo({
-            top: Math.max(0, scrollTop),
-            behavior: 'smooth'
-          });
+          if (step.target === "nav") {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            const rect = targetElement.getBoundingClientRect();
+            const elementTop = rect.top + window.scrollY;
+            window.scrollTo({
+              top: elementTop - (window.innerHeight * 0.15),
+              behavior: 'smooth'
+            });
+          }
         }, 150);
       }
     }
@@ -108,24 +98,18 @@ export default function GuidedTour() {
 
   if (!showModal && !isActive) return null;
 
-  // MODAL INICIAL
   if (showModal) {
     return (
       <div className="tour-modal-overlay" onClick={handleSkipTour}>
         <div className="tour-modal" onClick={(e) => e.stopPropagation()}>
           <button className="tour-close" onClick={handleSkipTour}>✕</button>
-          
           <div className="tour-modal-content">
             <div className="tour-modal-header">
               <h2>🎓 Bienvenido a Alfabetización Digital</h2>
               <p>¿Cómo deseas explorar la plataforma?</p>
             </div>
-
             <div className="tour-options">
-              <button 
-                className="tour-option-btn tour-option-guide"
-                onClick={handleStartTour}
-              >
+              <button className="tour-option-btn tour-option-guide" onClick={handleStartTour}>
                 <div className="option-icon">👨‍🏫</div>
                 <div className="option-content">
                   <h3>Realizar Guía Interactiva</h3>
@@ -133,11 +117,7 @@ export default function GuidedTour() {
                 </div>
                 <div className="option-arrow">→</div>
               </button>
-
-              <button 
-                className="tour-option-btn tour-option-explore"
-                onClick={handleViewGuide}
-              >
+              <button className="tour-option-btn tour-option-explore" onClick={handleSkipTour}>
                 <div className="option-icon">🗺️</div>
                 <div className="option-content">
                   <h3>Explorar por Tu Cuenta</h3>
@@ -146,144 +126,88 @@ export default function GuidedTour() {
                 <div className="option-arrow">→</div>
               </button>
             </div>
-
-            <div className="tour-info-box">
-              <h4>📍 ¿Qué encontrarás en esta página?</h4>
-              <ul className="tour-features-list">
-                <li><strong>Home:</strong> Introducción y características de la plataforma</li>
-                <li><strong>Cursos:</strong> Explora todos los cursos disponibles</li>
-                <li><strong>Navega:</strong> Usa la barra superior para ir a diferentes secciones</li>
-                <li><strong>Login/Registro:</strong> Crea tu cuenta para guardar progreso</li>
-                <li><strong>Panel Admin:</strong> (Solo para administradores) Crea cursos y lecciones</li>
-              </ul>
-            </div>
-
-            <p className="tour-skip-note" onClick={handleSkipTour}>
-              Puedes saltarte esto en cualquier momento
-            </p>
+            <p className="tour-skip-note" onClick={handleSkipTour}>Saltar por ahora</p>
           </div>
         </div>
       </div>
     );
   }
 
-  // TOUR INTERACTIVO
   if (isActive) {
     const step = TOUR_STEPS[currentStep];
     const targetElement = document.querySelector(step.target);
+    const rect = targetElement ? targetElement.getBoundingClientRect() : null;
+    const isNav = step.target === "nav";
+
+    const getTooltipStyle = () => {
+      if (!rect) return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
+      
+      const tooltipWidth = Math.min(420, window.innerWidth - 60);
+      let top, left;
+
+      if (isNav) {
+        top = rect.bottom + 20; 
+        left = (window.innerWidth / 2) - (tooltipWidth / 2);
+      } else {
+        top = rect.top + window.scrollY + 40;
+        left = (rect.left + window.scrollX + rect.width / 2) - (tooltipWidth / 2);
+      }
+
+      left = Math.max(20, Math.min(left, window.innerWidth - tooltipWidth - 20));
+
+      return {
+        top: `${top}px`,
+        left: `${left}px`,
+        width: `${tooltipWidth}px`,
+        position: isNav ? "fixed" : "absolute",
+        zIndex: 100000
+      };
+    };
 
     return (
       <>
-        {/* Overlay oscuro con z-index bajo */}
-        <div className="tour-overlay" style={{ zIndex: 9980 }} />
-
-        {/* Highlight del elemento */}
-        {targetElement && (
+        {rect && (
           <div
             className="tour-highlight"
             style={{
-              top: targetElement.getBoundingClientRect().top + window.scrollY - 8,
-              left: targetElement.getBoundingClientRect().left + window.scrollX - 8,
-              width: targetElement.getBoundingClientRect().width + 16,
-              height: targetElement.getBoundingClientRect().height + 16,
-              zIndex: 9985,
+              top: isNav ? rect.top : rect.top + window.scrollY - 4,
+              left: isNav ? rect.left : rect.left + window.scrollX - 4,
+              width: isNav ? rect.width : rect.width + 8,
+              height: isNav ? rect.height : rect.height + 8,
+              position: isNav ? "fixed" : "absolute",
+              boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.7)",
+              pointerEvents: "none",
+              zIndex: 99999,
+              borderRadius: isNav ? "0" : "8px"
             }}
           />
         )}
 
-        {/* Caja de información - SIEMPRE AL FRENTE */}
-        {(() => {
-          const tooltipWidth = 450;
-          const tooltipHeight = 250;
-          const padding = 20;
-          const gap = 20;
-          
-          let top, left;
-          
-          if (targetElement) {
-            const targetRect = targetElement.getBoundingClientRect();
-            const spaceBelow = window.innerHeight - targetRect.bottom;
-            const spaceAbove = targetRect.top;
-            
-            if (spaceBelow > tooltipHeight + gap) {
-              top = window.scrollY + targetRect.bottom + gap;
-            } else if (spaceAbove > tooltipHeight + gap) {
-              top = window.scrollY + targetRect.top - tooltipHeight - gap;
-            } else {
-              top = window.scrollY + Math.max(gap, (window.innerHeight - tooltipHeight) / 2);
-            }
-          } else {
-            // Fallback: center en la pantalla si no encuentra elemento
-            top = window.scrollY + (window.innerHeight - tooltipHeight) / 2;
-          }
-          
-          // Posición horizontal centrada
-          left = Math.max(padding, (window.innerWidth - tooltipWidth) / 2);
-          
-          return (
-            <div
-              className={`tour-tooltip`}
-              style={{
-                position: "fixed",
-                top: Math.max(padding, top) + "px",
-                left: left + "px",
-                width: tooltipWidth + "px",
-                zIndex: 99999,
-              }}
-            >
-              <div className="tour-tooltip-header">
-                <h3>{step.title}</h3>
-                <button className="tour-tooltip-close" onClick={handleEndTour}>✕</button>
-              </div>
-
-              <p className="tour-tooltip-description">{step.description}</p>
-
-              <div className="tour-progress">
-                <div className="progress-bar">
-                  <div 
-                    className="progress-fill"
-                    style={{ width: `${((currentStep + 1) / TOUR_STEPS.length) * 100}%` }}
-                  />
-                </div>
-                <span className="progress-text">
-                  Paso {currentStep + 1} de {TOUR_STEPS.length}
-                </span>
-              </div>
-
-              <div className="tour-actions">
-                <button
-                  className="tour-btn tour-btn-prev"
-                  onClick={handlePrevStep}
-                  disabled={currentStep === 0}
-                >
-                  ← Anterior
-                </button>
-
-                <div className="tour-dots">
-                  {TOUR_STEPS.map((_, index) => (
-                    <button
-                      key={index}
-                      className={`tour-dot ${index === currentStep ? "active" : ""}`}
-                      onClick={() => setCurrentStep(index)}
-                      title={`Ir al paso ${index + 1}`}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  className="tour-btn tour-btn-next"
-                  onClick={handleNextStep}
-                >
-                  {currentStep === TOUR_STEPS.length - 1 ? "Finalizar ✓" : "Siguiente →"}
-                </button>
-              </div>
-
-              <button className="tour-btn-skip" onClick={handleEndTour}>
-                Saltar tour
-              </button>
+        <div className="tour-tooltip" style={getTooltipStyle()}>
+          <div className="tour-tooltip-header">
+            <h3>{step.title}</h3>
+            <button className="tour-tooltip-close" onClick={handleEndTour}>✕</button>
+          </div>
+          <p className="tour-tooltip-description">{step.description}</p>
+          <div className="tour-progress">
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ width: `${((currentStep + 1) / TOUR_STEPS.length) * 100}%` }}
+              />
             </div>
-          );
-        })()}
+            <span className="progress-text">Paso {currentStep + 1} de {TOUR_STEPS.length}</span>
+          </div>
+          <div className="tour-actions">
+            <button className="tour-btn tour-btn-prev" onClick={handlePrevStep} disabled={currentStep === 0}>
+              Anterior
+            </button>
+            <button className="tour-btn tour-btn-next" onClick={handleNextStep}>
+              {currentStep === TOUR_STEPS.length - 1 ? "Finalizar ✓" : "Siguiente"}
+            </button>
+          </div>
+          <button className="tour-btn-skip" onClick={handleEndTour}>Saltar tour</button>
+        </div>
       </>
     );
   }
