@@ -25,7 +25,7 @@ const TOUR_STEPS = [
   {
     target: "nav",
     title: "🧭 Navegación Principal",
-    description: "Usa esta barra para navegar entre diferentes secciones. Si eres administrador, verás 'Panel Admin' aquí.",
+    description: "Usa esta barra para navegar entre diferentes secciones.",
   },
   {
     target: ".footer",

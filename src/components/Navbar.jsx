@@ -15,10 +15,8 @@ export default function Navbar() {
     const userId = localStorage.getItem("userId");
     
     if (token) {
-      // primero setear datos locales
       setUser({ name: userName, role: userRole });
 
-      // intentar refrescar rol/nombre desde la API para reflejar cambios en la BD
       if (userId) {
         api
           .get(`/auth/user/${userId}`, { headers: { Authorization: token } })
@@ -31,13 +29,8 @@ export default function Navbar() {
             }
           })
           .catch((err) => {
-            // si hay error de autorización, limpiar sesión
             if (err.response && err.response.status === 401) {
-              localStorage.removeItem("token");
-              localStorage.removeItem("userName");
-              localStorage.removeItem("userRole");
-              localStorage.removeItem("userId");
-              setUser(null);
+              handleLogout();
               navigate("/login");
             }
           });
@@ -49,10 +42,13 @@ export default function Navbar() {
     localStorage.removeItem("token");
     localStorage.removeItem("userName");
     localStorage.removeItem("userRole");
+    localStorage.removeItem("userId");
     setUser(null);
     navigate("/");
     setMenuOpen(false);
   };
+
+  const toggleMenu = () => setMenuOpen(!menuOpen);
 
   return (
     <nav className="navbar">
@@ -61,21 +57,25 @@ export default function Navbar() {
         <h2>Alfabetización Digital</h2>
       </Link>
 
-      <div className="navbar-center">
-        <Link to="/courses" className="nav-link">Cursos</Link>
-        <Link to="/chatbot" className="nav-link">Asistente IA</Link>
+      {/* Navegación Central Ampliada */}
+      <div className={`navbar-center ${menuOpen ? "open" : ""}`}>
+        <Link to="/" className="nav-link" onClick={() => setMenuOpen(false)}>Inicio</Link>
+        <Link to="/courses" className="nav-link" onClick={() => setMenuOpen(false)}>Cursos</Link>
+        <Link to="/chatbot" className="nav-link" onClick={() => setMenuOpen(false)}>Asistente IA</Link>
+        <Link to="/about" className="nav-link" onClick={() => setMenuOpen(false)}>Nosotros</Link>
+        <Link to="/contact" className="nav-link" onClick={() => setMenuOpen(false)}>Ayuda</Link>
       </div>
 
-      <div className="navbar-auth">
+      <div className={`navbar-auth ${menuOpen ? "open" : ""}`}>
         {user ? (
-          <div className={`user-menu ${menuOpen ? "open" : ""}`}>
+          <div className="user-menu">
             <span className="user-greeting">¡Hola, {user.name}!</span>
             {user.role === "admin" && (
-              <Link to="/admin" className="btn-admin">
-                👨‍💼 Panel Admin
+              <Link to="/admin" className="btn-admin" onClick={() => setMenuOpen(false)}>
+                Panel
               </Link>
             )}
-            <Link to="/dashboard" className="btn-secondary">
+            <Link to="/dashboard" className="btn-secondary" onClick={() => setMenuOpen(false)}>
               Mi Progreso
             </Link>
             <button onClick={handleLogout} className="btn-logout">
@@ -84,18 +84,18 @@ export default function Navbar() {
           </div>
         ) : (
           <div className="auth-buttons">
-            <Link to="/login" className="btn-outline">
+            <Link to="/login" className="btn-outline" onClick={() => setMenuOpen(false)}>
               Ingresar
             </Link>
-            <Link to="/register" className="btn-primary">
+            <Link to="/register" className="btn-primary" onClick={() => setMenuOpen(false)}>
               Registrarse
             </Link>
           </div>
         )}
       </div>
 
-      <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
-        ☰
+      <button className="hamburger" onClick={toggleMenu}>
+        {menuOpen ? "✕" : "☰"}
       </button>
     </nav>
   );
