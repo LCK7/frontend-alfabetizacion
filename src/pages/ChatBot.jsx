@@ -106,7 +106,11 @@ const ChatBot = () => {
                 <div className="avatar">{m.role === 'user' ? '👤' : '🤖'}</div>
                 <div className="bubble">
                   <div className="role">{m.role === "user" ? "Tu pregunta" : "Respuesta del Asistente"}</div>
-                  <div className="text">{m.text}</div>
+                  <div className="text">
+                    {m.text.split("\n").map((line, idx) => (
+                      <span key={idx}>{line}<br /></span>
+                    ))}
+                  </div>
                   <div className="message-actions">
                     <span className="timestamp">{formatTime(m.time)}</span>
                     {m.role === 'assistant' && (
