@@ -8,9 +8,12 @@ import Register from "./pages/Register";
 import ChatBot from "./pages/ChatBot";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import Dashboard from "./pages/Dashboard";
 import "./App.css";
 
 export default function App() {
+  const userRole = (localStorage.getItem("userRole") || "").toLowerCase();
+
   return (
     <BrowserRouter>
       <Navbar />
@@ -27,6 +30,14 @@ export default function App() {
               <AdminDashboard />
             </ProtectedRoute>
           } 
+        />
+        <Route 
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
         />
       </Routes>
     </BrowserRouter>

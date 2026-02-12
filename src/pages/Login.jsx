@@ -19,11 +19,12 @@ export default function Login() {
       const res = await api.post("/auth/login", { email, password });
 
       localStorage.setItem("token", res.data.token);
-      localStorage.setItem("userName", res.data.user.name);
-      localStorage.setItem("userRole", res.data.user.role);
+      localStorage.setItem("userName", res.data.user.name || "Usuario");
+      // almacenar rol normalizado en minúsculas para comparaciones consistentes
+      localStorage.setItem("userRole", res.data.user.role ? res.data.user.role.toLowerCase() : "");
       localStorage.setItem("userId", res.data.user.id);
 
-      navigate(res.data.user.role === "admin" ? "/admin" : "/");
+      navigate((res.data.user.role || "").toLowerCase() === "admin" ? "/admin" : "/");
     } catch (err) {
       setError(err.response?.data?.msg || "Error al iniciar sesión");
     } finally {

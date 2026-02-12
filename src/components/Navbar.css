@@ -85,7 +85,7 @@
   border-right: 2px solid #e5e7eb;
 }
 
-/* Botones Mejorados */
+
 .btn-outline, .btn-primary, .btn-secondary, .btn-admin, .btn-logout {
   padding: 0.7rem 1.4rem;
   border-radius: 12px;
@@ -121,12 +121,14 @@
 }
 
 .btn-secondary {
-  background: #f3f4f6;
-  color: #1f2937;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #000;
+  box-shadow: 0 4px 12px rgba(99,102,241,0.3);
 }
 
 .btn-secondary:hover {
-  background: #e5e7eb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(99,102,241,0.4);
 }
 
 .btn-admin {
@@ -154,8 +156,6 @@
   border-radius: 10px;
 }
 
-/* ===================== RESPONSIVE OPTIMIZADO ===================== */
-
 @media (max-width: 1024px) {
   .navbar-center { gap: 0.2rem; }
   .nav-link { padding: 0.5rem 0.8rem; }
@@ -165,7 +165,7 @@
   .hamburger { display: block; }
 
   .navbar-center, .navbar-auth {
-    display: none; /* Ocultar por defecto en móvil */
+    display: none;
     position: absolute;
     left: 0;
     right: 0;
@@ -183,7 +183,8 @@
 
   .navbar-auth.open {
     display: flex;
-    top: calc(70px + 230px); /* Ajuste según cantidad de links */
+    top: auto;
+    position: relative;
     border-top: 1px solid #f3f4f6;
     z-index: 98;
   }

@@ -13,10 +13,11 @@ export default function Navbar() {
     const userName = localStorage.getItem("userName");
     const userRole = localStorage.getItem("userRole");
     const userId = localStorage.getItem("userId");
-    
+
     if (token) {
-      // primero setear datos locales
-      setUser({ name: userName, role: userRole });
+      // normalizar rol a minúsculas y proveer nombre por defecto
+      const normalizedRole = userRole ? userRole.toLowerCase() : null;
+      setUser({ name: userName || "Usuario", role: normalizedRole });
 
       // intentar refrescar rol/nombre desde la API para reflejar cambios en la BD
       if (userId) {
@@ -25,9 +26,10 @@ export default function Navbar() {
           .then((res) => {
             const fresh = res.data;
             if (fresh) {
-              localStorage.setItem("userRole", fresh.role);
-              localStorage.setItem("userName", fresh.name);
-              setUser({ name: fresh.name, role: fresh.role });
+              const freshRole = fresh.role ? fresh.role.toLowerCase() : null;
+              localStorage.setItem("userRole", freshRole);
+              localStorage.setItem("userName", fresh.name || "Usuario");
+              setUser({ name: fresh.name || "Usuario", role: freshRole });
             }
           })
           .catch((err) => {
@@ -61,12 +63,12 @@ export default function Navbar() {
         <h2>Alfabetización Digital</h2>
       </Link>
 
-      <div className="navbar-center">
+      <div className={`navbar-center ${menuOpen ? "open" : ""}`}>
         <Link to="/courses" className="nav-link">Cursos</Link>
         <Link to="/chatbot" className="nav-link">Asistente IA</Link>
       </div>
 
-      <div className="navbar-auth">
+      <div className={`navbar-auth ${menuOpen ? "open" : ""}`}>
         {user ? (
           <div className={`user-menu ${menuOpen ? "open" : ""}`}>
             <span className="user-greeting">¡Hola, {user.name}!</span>
