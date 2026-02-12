@@ -1,0 +1,14 @@
+.exam-form {
+  padding: 2rem 0;
+}
+.exam-form-card {
+  background: #fff;
+  border: 1px solid #eef1f6;
+  padding: 1.2rem;
+  border-radius: 10px;
+  max-width: 700px;
+}
+.exam-form .form-group { margin-bottom: 10px; }
+.exam-form label { display:block; font-weight:600; margin-bottom:6px; }
+.exam-form input, .exam-form select { width:100%; padding:8px; border:1px solid #ddd; border-radius:6px }
+.btn-submit { background:#4834d4; color:white; border:none; padding:10px 14px; border-radius:8px; }

@@ -31,12 +31,9 @@ export default function Courses() {
   };
 
   const handleEnrollCourse = (courseId) => {
-    if (!localStorage.getItem("token")) {
-      alert("Debes iniciar sesión para acceder al curso");
-      navigate("/login");
-    } else {
-      navigate(`/courses/${courseId}`);
-    }
+    // permitir entrada al detalle del curso sin forzar login;
+    // pero para guardar progreso será necesario iniciar sesión desde el detalle
+    navigate(`/courses/${courseId}`);
   };
 
   const handleAdminAccess = () => {
@@ -104,25 +101,25 @@ export default function Courses() {
 
                 <p className="course-description">{course.description}</p>
 
-                {course.Lessons && course.Lessons.length > 0 && (
+                {course.lessons && course.lessons.length > 0 && (
                   <div className="course-stats">
                     <span className="stat">
-                      📖 {course.Lessons.length} lecciones
+                      📖 {course.lessons.length} lecciones
                     </span>
                   </div>
                 )}
 
-                {selectedCourse?.id === course.id && course.Lessons && course.Lessons.length > 0 && (
+                {selectedCourse?.id === course.id && course.lessons && course.lessons.length > 0 && (
                   <div className="lessons-preview">
                     <h4>Lecciones incluidas:</h4>
                     <ul>
-                      {course.Lessons.slice(0, 3).map((lesson) => (
+                      {course.lessons.slice(0, 3).map((lesson) => (
                         <li key={lesson.id}>
                           <span>✓</span> {lesson.title}
                         </li>
                       ))}
-                      {course.Lessons.length > 3 && (
-                        <li className="more-lessons">+ {course.Lessons.length - 3} lecciones más</li>
+                      {course.lessons.length > 3 && (
+                        <li className="more-lessons">+ {course.lessons.length - 3} lecciones más</li>
                       )}
                     </ul>
                   </div>

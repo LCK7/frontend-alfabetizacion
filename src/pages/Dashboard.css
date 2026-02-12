@@ -158,8 +158,8 @@
 
 .courses-list {
   margin-top: 1.2rem;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1rem;
 }
 
@@ -235,8 +235,20 @@
   font-weight: 600;
   max-width: 280px;
 
-  animation: slideFadeIn 0.5s ease;
+  opacity: 0;
+  transform: translateY(20px) translateX(10px) scale(0.98);
+  transition: opacity 0.45s ease, transform 0.45s ease;
   z-index: 999;
+}
+
+.motivation-popup.show {
+  opacity: 1;
+  transform: translateY(0) translateX(0) scale(1);
+}
+
+.motivation-popup.hide {
+  opacity: 0;
+  transform: translateY(8px) translateX(6px) scale(0.995);
 }
 
 .motivation-popup button {

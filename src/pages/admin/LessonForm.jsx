@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../../api/api";
 import "./LessonForm.css";
+import RichTextEditor from "../../components/RichTextEditor";
 
 export default function LessonForm({ onSubmit }) {
   const [title, setTitle] = useState("");
@@ -12,25 +13,58 @@ export default function LessonForm({ onSubmit }) {
   const [Editor, setEditor] = useState(null);
   const [loadingEditor, setLoadingEditor] = useState(false);
 
-  // intentamos carga dinámica del editor si está disponible
+  // intentar cargar TipTap dinámicamente; si no está instalado usar fallback
   useEffect(() => {
     let mounted = true;
-    async function load() {
+    async function loadTipTap() {
       try {
         setLoadingEditor(true);
-        // evitar que Vite haga análisis estático de dependencias
-        const moduleName = "react-" + "quill";
-        const mod = await import(moduleName);
-        // sólo asignar si sigue montado
-        if (mounted && mod && mod.default) setEditor(() => mod.default);
+        const tiptap = await import("@tiptap/react");
+        const StarterKit = (await import("@tiptap/starter-kit")).default;
+        const Link = (await import("@tiptap/extension-link")).default;
+        // Image extension es opcional
+        let Image = null;
+        try {
+          Image = (await import("@tiptap/extension-image")).default;
+        } catch (e) {
+          Image = null;
+        }
+
+        if (!mounted) return;
+
+        // crear componente Editor que use TipTap internamente
+        const EditorComponent = ({ value, onChange }) => {
+          const { useEditor, EditorContent } = tiptap;
+          const editor = useEditor({
+            extensions: [StarterKit, Link].concat(Image ? [Image] : []),
+            content: value || "",
+            onUpdate: ({ editor }) => onChange(editor.getHTML()),
+          });
+
+          useEffect(() => {
+            if (!editor) return;
+            const current = editor.getHTML();
+            if (value !== current) editor.commands.setContent(value || "");
+          }, [value, editor]);
+
+          useEffect(() => {
+            return () => {
+              if (editor) editor.destroy();
+            };
+          }, [editor]);
+
+          return <EditorContent editor={editor} />;
+        };
+
+        setEditor(() => EditorComponent);
       } catch (err) {
-        // no hacer nada: fallback a textarea
-        console.warn("react-quill no disponible, usando textarea como fallback.", err);
+        console.warn("TipTap no disponible, usando editor fallback.", err);
       } finally {
         setLoadingEditor(false);
       }
     }
-    load();
+
+    if (typeof window !== "undefined") loadTipTap();
     return () => (mounted = false);
   }, []);
 
@@ -96,14 +130,13 @@ export default function LessonForm({ onSubmit }) {
       <div className="form-group">
         <label htmlFor="content">Contenido (editor)</label>
         {Editor ? (
-          // Editor cargado dinámicamente
-          <Editor value={content} onChange={setContent} theme="snow" />
+          <Editor value={content} onChange={setContent} />
         ) : (
           <>
-            <textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} placeholder="Escribe los pasos detallados para esta lección..." rows="6" />
+            <RichTextEditor value={content} onChange={setContent} />
             {loadingEditor && <p>Cargando editor enriquecido...</p>}
             {!loadingEditor && (
-              <p className="editor-note">Editor enriquecido no disponible, se usa textarea. Para habilitarlo instala `react-quill` y `quill`.</p>
+              <p className="editor-note">Editor enriquecido no disponible, se usa editor ligero.</p>
             )}
           </>
         )}
