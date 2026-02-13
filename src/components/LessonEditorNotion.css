@@ -1,0 +1,25 @@
+.notion-editor-container {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 16px;
+    background: white;
+}
+
+.notion-toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.notion-toolbar button {
+    border: none;
+    background: #f3f4f6;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.notion-editor {
+    min-height: 200px;
+    outline: none;
+}

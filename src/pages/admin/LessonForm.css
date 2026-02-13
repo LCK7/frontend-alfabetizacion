@@ -66,3 +66,67 @@
 .btn-submit:active {
   transform: translateY(0);
 }
+
+.tiptap-editor {
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+  min-height: 180px;
+  font-size: 1rem;
+  line-height: 1.6;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  background-color: #fdfdfd;
+}
+
+.tiptap-editor h1,
+.markdown-preview h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.tiptap-editor h2,
+.markdown-preview h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tiptap-editor h3,
+.markdown-preview h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.tiptap-editor p,
+.markdown-preview p {
+  margin-bottom: 1rem;
+}
+
+.tiptap-editor ul,
+.markdown-preview ul {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.tiptap-editor ol,
+.markdown-preview ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.tiptap-editor blockquote,
+.markdown-preview blockquote {
+  border-left: 4px solid #2196F3;
+  padding-left: 1rem;
+  color: #555;
+  margin: 1rem 0;
+  font-style: italic;
+}
+
+.markdown-preview {
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+  background: #fff;
+  line-height: 1.6;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+}

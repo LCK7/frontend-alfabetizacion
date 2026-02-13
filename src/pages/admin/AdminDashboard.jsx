@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../../api/api";
+import { listExamsByCourse } from "../../api/exams";
+
 import CourseForm from "./CourseForm";
 import LessonForm from "./LessonForm";
 import ExamForm from "./ExamForm";
@@ -15,6 +17,7 @@ export default function AdminDashboard() {
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
+  const [editingLesson, setEditingLesson] = useState(null);
 
   const token = localStorage.getItem("token");
 
@@ -89,17 +92,25 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleCreateLesson = async (lessonData) => {
+  const handleCreateOrEditLesson = async (lessonData) => {
     try {
-      await api.post("/lessons", { ...lessonData, CourseId: selectedCourse.id }, {
-        headers: { Authorization: token },
-      });
-      alert("Lección creada exitosamente");
+      if (editingLesson) {
+        await api.put(`/lessons/${editingLesson.id}`, lessonData, {
+          headers: { Authorization: token },
+        });
+        alert("Lección actualizada exitosamente");
+      } else {
+        await api.post("/lessons", { ...lessonData, CourseId: selectedCourse.id }, {
+          headers: { Authorization: token },
+        });
+        alert("Lección creada exitosamente");
+      }
       loadLessons(selectedCourse.id);
       setShowLessonForm(false);
+      setEditingLesson(null);
     } catch (error) {
       console.error("Error:", error);
-      alert("Error al crear la lección");
+      alert("Error al guardar la lección");
     }
   };
 
@@ -119,7 +130,7 @@ export default function AdminDashboard() {
   // --- Exámenes ---
   const loadExams = async (courseId) => {
     try {
-      const response = await api.get(`/exams/by-course/${courseId}`);
+      const response = await api.get(`/exams/course/${courseId}`);
       setExams(response.data);
     } catch (error) {
       console.error("Error al cargar exámenes:", error);
@@ -157,20 +168,20 @@ export default function AdminDashboard() {
           {showCourseForm && <CourseForm onSubmit={handleCreateCourse} initialData={editingCourse} />}
 
           {loading ? <p className="loading">Cargando cursos...</p> :
-          courses.length === 0 ? <p className="empty">No hay cursos. ¡Crea uno!</p> :
-          <div className="courses-list">
-            {courses.map((course) => (
-              <div key={course.id} className={`course-card ${selectedCourse?.id === course.id ? "active" : ""}`} onClick={() => setSelectedCourse(course)}>
-                <h3>{course.title}</h3>
-                <p className="course-level">Nivel: {course.level}</p>
-                <p className="course-description">{course.description}</p>
-                <div className="course-actions">
-                  <button className="btn-edit" onClick={(e) => { e.stopPropagation(); setEditingCourse(course); setShowCourseForm(true); }}>✏️ Editar</button>
-                  <button className="btn-delete" onClick={(e) => { e.stopPropagation(); handleDeleteCourse(course.id); }}>🗑️ Eliminar</button>
-                </div>
-              </div>
-            ))}
-          </div>}
+            courses.length === 0 ? <p className="empty">No hay cursos. ¡Crea uno!</p> :
+              <div className="courses-list">
+                {courses.map((course) => (
+                  <div key={course.id} className={`course-card ${selectedCourse?.id === course.id ? "active" : ""}`} onClick={() => setSelectedCourse(course)}>
+                    <h3>{course.title}</h3>
+                    <p className="course-level">Nivel: {course.level}</p>
+                    <p className="course-description">{course.description}</p>
+                    <div className="course-actions">
+                      <button className="btn-edit" onClick={(e) => { e.stopPropagation(); setEditingCourse(course); setShowCourseForm(true); }}>✏️ Editar</button>
+                      <button className="btn-delete" onClick={(e) => { e.stopPropagation(); handleDeleteCourse(course.id); }}>🗑️ Eliminar</button>
+                    </div>
+                  </div>
+                ))}
+              </div>}
         </div>
 
         {/* Panel de Lecciones */}
@@ -178,33 +189,34 @@ export default function AdminDashboard() {
           <div className="lessons-panel">
             <div className="panel-header">
               <h2>Lecciones de: {selectedCourse.title}</h2>
-              <button className="btn-primary" onClick={() => setShowLessonForm(!showLessonForm)}>
+              <button className="btn-primary" onClick={() => { setEditingLesson(null); setShowLessonForm(!showLessonForm); }}>
                 {showLessonForm ? "Cancelar" : "+ Nueva Lección"}
               </button>
             </div>
 
-            {showLessonForm && <LessonForm onSubmit={handleCreateLesson} />}
+            {showLessonForm && <LessonForm onSubmit={handleCreateOrEditLesson} initialData={editingLesson} />}
 
             {lessons.length === 0 ? <p className="empty">No hay lecciones en este curso</p> :
-            <div className="lessons-list">
-              {lessons.map((lesson) => (
-                <div key={lesson.id} className="lesson-card">
-                  <div className="lesson-content">
-                    <h4>{lesson.title}</h4>
-                    <p className="lesson-order">Orden: {lesson.order}</p>
-                    {lesson.content && <p className="lesson-description">{lesson.content}</p>}
-                    {lesson.video_url && (
-                      <p className="lesson-video">
-                        Video: <a href={lesson.video_url} target="_blank" rel="noreferrer">{lesson.video_url}</a>
-                      </p>
-                    )}
+              <div className="lessons-list">
+                {lessons.map((lesson) => (
+                  <div key={lesson.id} className="lesson-card">
+                    <div className="lesson-content">
+                      <h4>{lesson.title}</h4>
+                      <p className="lesson-order">Orden: {lesson.order}</p>
+                      {lesson.content && <p className="lesson-description">{lesson.content}</p>}
+                      {lesson.video_url && (
+                        <p className="lesson-video">
+                          Video: <a href={lesson.video_url} target="_blank" rel="noreferrer">{lesson.video_url}</a>
+                        </p>
+                      )}
+                    </div>
+                    <div className="lesson-actions">
+                      <button className="btn-edit" onClick={() => { setEditingLesson(lesson); setShowLessonForm(true); }}>✏️ Editar</button>
+                      <button className="btn-delete" onClick={() => handleDeleteLesson(lesson.id)}>🗑️ Eliminar</button>
+                    </div>
                   </div>
-                  <div className="lesson-actions">
-                    <button className="btn-delete" onClick={() => handleDeleteLesson(lesson.id)}>🗑️ Eliminar</button>
-                  </div>
-                </div>
-              ))}
-            </div>}
+                ))}
+              </div>}
           </div>
         )}
 
@@ -221,17 +233,17 @@ export default function AdminDashboard() {
             {showExamForm && <ExamForm onSubmit={handleCreateExam} selectedCourse={selectedCourse} />}
 
             {exams.length === 0 ? <p className="empty">No hay exámenes para este curso</p> :
-            <div className="exams-list">
-              {exams.map((exam) => (
-                <div key={exam.id} className="exam-card">
-                  <p><strong>Pregunta:</strong> {exam.question}</p>
-                  <p>A: {exam.option_a}</p>
-                  <p>B: {exam.option_b}</p>
-                  <p>C: {exam.option_c}</p>
-                  <p>Correcta: {exam.correct_option?.toUpperCase()}</p>
-                </div>
-              ))}
-            </div>}
+              <div className="exams-list">
+                {exams.map((exam) => (
+                  <div key={exam.id} className="exam-card">
+                    <p><strong>Pregunta:</strong> {exam.question}</p>
+                    <p>A: {exam.option_a}</p>
+                    <p>B: {exam.option_b}</p>
+                    <p>C: {exam.option_c}</p>
+                    <p>Correcta: {exam.correct_option?.toUpperCase()}</p>
+                  </div>
+                ))}
+              </div>}
           </div>
         )}
       </div>
