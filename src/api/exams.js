@@ -3,7 +3,7 @@ import api from "./api";
 export async function createExam(payload) {
   const token = localStorage.getItem("token");
   const res = await api.post("/exams", payload, {
-    headers: { Authorization: token }
+    headers: { Authorization: `Bearer ${token}` }
   });
   return res.data;
 }
