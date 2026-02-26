@@ -44,6 +44,8 @@
   font-weight: 800;
   margin-bottom: 1.5rem;
   line-height: 1.1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.02em;
 }
 
 .hero-highlight {
@@ -57,8 +59,10 @@
 .hero-subtitle {
   font-size: 1.4rem;
   margin-bottom: 2.5rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
   max-width: 90%;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  font-weight: 500;
 }
 
 .hero-stats {
@@ -69,31 +73,38 @@
 
 .stat {
   background: rgba(255, 255, 255, 0.1);
-  padding: 1rem 1.5rem;
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
+  padding: 1.2rem 2rem;
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
+  min-width: 150px;
+  text-align: center;
 }
 
 .stat:hover {
   transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .stat-number {
   display: block;
   font-size: 2.2rem;
   font-weight: 800;
-  color: #f6e58d;
+  color: #f6e58d !important;
+  -webkit-text-fill-color: #f6e58d !important;
+  line-height: 1;
+  margin-bottom: 5px;
 }
 
 .stat-label {
-  font-size: 0.9rem;
-  color: #edf2f7;
+  font-size: 0.8rem;
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 600;
+  letter-spacing: 1.2px;
+  font-weight: 700;
 }
 
 .hero-buttons {
@@ -110,6 +121,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  letter-spacing: 0.5px;
 }
 
 .btn-lg {

@@ -9,8 +9,9 @@ import Register from "./pages/Register";
 import ChatBot from "./pages/ChatBot";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import ExamForm from "./pages/admin/ExamForm";
+import AdminExamsPage from "./pages/admin/AdminExamsPage";
 import Dashboard from "./pages/Dashboard";
+import LessonExam from "./components/LessonExam";
 import "./App.css";
 
 export default function App() {
@@ -26,23 +27,35 @@ export default function App() {
         <Route path="/chatbot" element={<ChatBot />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route 
-          path="/admin" 
+
+        <Route
+          path="/lesson/:lessonId/exam"
+          element={
+            <ProtectedRoute>
+              <LessonExam />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin"
           element={
             <ProtectedRoute adminOnly={true}>
               <AdminDashboard />
             </ProtectedRoute>
-          } 
+          }
         />
+
         <Route
           path="/admin/exams"
           element={
             <ProtectedRoute adminOnly={true}>
-              <ExamForm />
+              <AdminExamsPage />
             </ProtectedRoute>
           }
         />
-        <Route 
+
+        <Route
           path="/dashboard"
           element={
             <ProtectedRoute>

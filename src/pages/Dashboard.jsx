@@ -3,7 +3,6 @@ import api from "../api/api";
 import { getMyProgress } from "../api/progress";
 import "./Dashboard.css";
 
-// Hook para animar un número de forma simple
 function useCountUp(target, duration = 700) {
   const [val, setVal] = useState(0);
   useEffect(() => {

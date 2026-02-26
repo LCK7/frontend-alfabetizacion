@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../../api/api";
 import "./LessonForm.css";
 import LessonEditorNotion from "../../components/LessonEditorNotion";
@@ -12,6 +12,17 @@ export default function LessonForm({ onSubmit, initialData }) {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  // Sincronizar contenido cuando cambia initialData (edición)
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title || "");
+      setContent(initialData.content || "");
+      setVideoUrl(initialData.video_url || "");
+      setOrder(initialData.order?.toString() || "1");
+      console.log('Lección para editar cargada:', initialData);
+    }
+  }, [initialData]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim() || saving) return;
@@ -20,36 +31,54 @@ export default function LessonForm({ onSubmit, initialData }) {
     let uploadedUrls = [];
 
     try {
+      // Subir archivos si existen
       if (files.length > 0) {
         setUploading(true);
-
         const form = new FormData();
         files.forEach((f) => form.append("files", f));
-
         const token = localStorage.getItem("token");
 
-        const res = await api.post("/uploads", form, {
-          headers: {
-            Authorization: token,
-            "Content-Type": "multipart/form-data",
-          },
-        });
-
-        uploadedUrls = res.data.files.map((f) => f.url);
+        try {
+          const res = await api.post("/uploads", form, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          uploadedUrls = res.data.files ? res.data.files.map((f) => f.url) : [];
+          console.log('✅ Archivos subidos:', uploadedUrls);
+        } catch (uploadError) {
+          console.error('❌ Error al subir archivos:', uploadError);
+          console.error('Response:', uploadError.response?.data);
+          uploadedUrls = [];
+        } finally {
+          setUploading(false);
+        }
       }
 
+      // Guardar lección
+      console.log('📝 Guardando lección:', { title, content, video_url, order });
+      
       await onSubmit({
-        title,
+        title: title.trim(),
         content,
-        video_url,
+        video_url: video_url.trim(),
         order: Number(order),
         resources: uploadedUrls,
       });
 
+      console.log('✅ Lección guardada exitosamente');
       setFiles([]);
+      
+    } catch (error) {
+      console.error('❌ Error al guardar lección:', error);
+      console.error('Status:', error.response?.status);
+      console.error('Message:', error.response?.data?.message || error.message);
+      
+      const errorMsg = error.response?.data?.message || error.message || 'Error desconocido al guardar';
+      alert(`Error al guardar la lección:\n${errorMsg}`);
     } finally {
-      setUploading(false);
       setSaving(false);
+      setUploading(false);
     }
   };
 

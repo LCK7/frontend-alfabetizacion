@@ -15,11 +15,9 @@ export default function Navbar() {
     const userId = localStorage.getItem("userId");
 
     if (token) {
-      // normalizar rol a minúsculas y proveer nombre por defecto
       const normalizedRole = userRole ? userRole.toLowerCase() : null;
       setUser({ name: userName || "Usuario", role: normalizedRole });
 
-      // intentar refrescar rol/nombre desde la API para reflejar cambios en la BD
       if (userId) {
         api
           .get(`/auth/user/${userId}`, { headers: { Authorization: token } })
@@ -33,7 +31,6 @@ export default function Navbar() {
             }
           })
           .catch((err) => {
-            // si hay error de autorización, limpiar sesión
             if (err.response && err.response.status === 401) {
               localStorage.removeItem("token");
               localStorage.removeItem("userName");
@@ -45,7 +42,7 @@ export default function Navbar() {
           });
       }
     }
-  }, []);
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -56,49 +53,66 @@ export default function Navbar() {
     setMenuOpen(false);
   };
 
+  const closeMenu = () => setMenuOpen(false);
+
   return (
     <nav className="navbar">
-      <Link to="/" className="navbar-brand">
-        <span className="logo-icon">📚</span>
-        <h2>Alfabetización Digital</h2>
-      </Link>
+      <div className="nav-container">
+        <Link to="/" className="navbar-brand" onClick={closeMenu}>
+          <span className="logo-icon">📚</span>
+          <h2>Alfabetización Digital</h2>
+        </Link>
 
-      <div className={`navbar-center ${menuOpen ? "open" : ""}`}>
-        <Link to="/courses" className="nav-link">Cursos</Link>
-        <Link to="/chatbot" className="nav-link">Asistente IA</Link>
-      </div>
+        {menuOpen && <div className="nav-overlay" onClick={closeMenu}></div>}
 
-      <div className={`navbar-auth ${menuOpen ? "open" : ""}`}>
-        {user ? (
-          <div className={`user-menu ${menuOpen ? "open" : ""}`}>
-            <span className="user-greeting">¡Hola, {user.name}!</span>
-            {user.role === "admin" && (
-              <Link to="/admin" className="btn-admin">
-                👨‍💼 Panel Admin
-              </Link>
+        <div className={`nav-menu ${menuOpen ? "open" : ""}`}>
+          <div className="nav-links">
+            <Link to="/courses" className="nav-link" onClick={closeMenu}>Cursos</Link>
+            <Link to="/chatbot" className="nav-link" onClick={closeMenu}>Asistente IA</Link>
+          </div>
+
+          <div className="nav-auth">
+            {user ? (
+              <div className="user-section">
+                <span className="user-greeting">¡Hola, {user.name}!</span>
+                <div className="user-actions">
+                  {user.role === "admin" && (
+                    <>
+                      <Link to="/admin" className="btn-admin-nav" onClick={closeMenu}>
+                        👨‍💼 Panel Admin
+                      </Link>
+                      <Link to="/admin/exams" className="btn-admin-nav" onClick={closeMenu}>
+                        📝 Administrar Exámenes
+                      </Link>
+                    </>
+                  )}
+                  <Link to="/dashboard" className="btn-progreso-nav" onClick={closeMenu}>
+                    Mi Progreso
+                  </Link>
+                  <button onClick={handleLogout} className="btn-logout-nav">
+                    Salir
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="auth-buttons">
+                <Link to="/login" className="btn-outline-nav" onClick={closeMenu}>
+                  Ingresar
+                </Link>
+                <Link to="/register" className="btn-primary-nav" onClick={closeMenu}>
+                  Registrarse
+                </Link>
+              </div>
             )}
-            <Link to="/dashboard" className="btn-secondary">
-              Mi Progreso
-            </Link>
-            <button onClick={handleLogout} className="btn-logout">
-              Salir
-            </button>
           </div>
-        ) : (
-          <div className="auth-buttons">
-            <Link to="/login" className="btn-outline">
-              Ingresar
-            </Link>
-            <Link to="/register" className="btn-primary">
-              Registrarse
-            </Link>
-          </div>
-        )}
-      </div>
+        </div>
 
-      <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
-        ☰
-      </button>
+        <button className={`hamburger ${menuOpen ? "active" : ""}`} onClick={() => setMenuOpen(!menuOpen)}>
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
     </nav>
   );
 }

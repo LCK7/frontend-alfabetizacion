@@ -10,31 +10,89 @@
   --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-/* CONTENEDOR PRINCIPAL: Ahora mucho más ancho */
+/* CONTENEDOR PRINCIPAL: Ultra ancho y moderno */
 .course-detail {
-  max-width: 1400px; 
+  max-width: 1600px; 
   margin: 0 auto;
-  padding: 4rem 2rem;
+  padding: 3rem 1.5rem;
   font-family: 'Inter', system-ui, sans-serif;
-  background-color: var(--bg-body);
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   min-height: 100vh;
+  position: relative;
 }
 
-/* HEADER */
+/* Elementos decorativos de fondo */
+.course-detail::before {
+  content: '';
+  position: fixed;
+  top: -20%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.05) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
+  animation: float-bg 30s infinite ease-in-out;
+}
+
+.course-detail::after {
+  content: '';
+  position: fixed;
+  bottom: -20%;
+  left: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
+  animation: float-bg-reverse 25s infinite ease-in-out;
+}
+
+@keyframes float-bg {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(50px, -30px) rotate(180deg); }
+}
+
+@keyframes float-bg-reverse {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(-30px, 50px) rotate(-180deg); }
+}
+
+/* HEADER: Más prominente y con sombra */
 .course-detail h1 {
-  font-size: 3.5rem; /* Título mucho más grande */
-  font-weight: 800;
+  font-size: 4rem;
+  font-weight: 900;
   color: var(--text-main);
   margin-bottom: 1.5rem;
   letter-spacing: -0.04em;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(135deg, var(--text-main) 0%, var(--primary) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 8s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .course-desc {
-  font-size: 1.3rem; /* Texto más grande */
+  font-size: 1.4rem;
   color: var(--text-muted);
-  max-width: 900px;
-  line-height: 1.6;
-  margin-bottom: 4rem;
+  max-width: 1000px;
+  line-height: 1.7;
+  margin-bottom: 3rem;
+  padding: 1.5rem 2rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  border-left: 4px solid var(--primary);
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 2;
 }
 
 /* LISTA DE LECCIONES: Más separación entre cards */
@@ -81,13 +139,39 @@
   flex: 1;
 }
 
-/* ACCIONES / BOTONES */
+/* ACCIONES / BOTONES: Más modernos y accesibles */
 .lesson-actions {
   display: flex;
   gap: 1.5rem;
   align-items: center;
+  position: relative;
 }
 
+/* Indicador de progreso */
+.progress-indicator {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 24px;
+  height: 24px;
+  background: var(--success);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
+  animation: pulse-success 2s infinite;
+}
+
+@keyframes pulse-success {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* BOTONES */
 .btn-small {
   padding: 1rem 2rem; /* Botones más grandes */
   font-size: 1rem;

@@ -17,9 +17,7 @@ export default function CourseDetail() {
   const [completedIds, setCompletedIds] = useState(new Set());
   const [lessonExams, setLessonExams] = useState([]);
 
-  /* =========================
-     CARGAR CURSO
-  ==========================*/
+
   useEffect(() => {
     async function load() {
       try {
@@ -44,6 +42,7 @@ export default function CourseDetail() {
         }
 
         setLessonExams([]);
+        setSelected(null);
 
       } catch (err) {
         console.error(err);
@@ -55,11 +54,23 @@ export default function CourseDetail() {
     }
 
     load();
+    window.scrollTo(0, 0);
   }, [id, navigate]);
 
-  /* =========================
-     MARCAR LECCION COMPLETADA
-  ==========================*/
+  const handleSelectLesson = (lessonId) => {
+    setSelected(lessonId);
+    
+    setTimeout(() => {
+      const lessonElement = document.getElementById(`lesson-${lessonId}`);
+      if (lessonElement) {
+        lessonElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }
+    }, 100);
+  };
+
   const handleComplete = async (lessonId) => {
     if (!localStorage.getItem("token")) {
       if (confirm("Debes iniciar sesión para guardar tu progreso. ¿Ir a Ingresar?")) {
@@ -90,9 +101,6 @@ export default function CourseDetail() {
     }
   };
 
-  /* =========================
-     CARGAR EXAMENES DE LECCION
-  ==========================*/
   useEffect(() => {
     let mounted = true;
 
@@ -115,9 +123,6 @@ export default function CourseDetail() {
     return () => (mounted = false);
   }, [selected]);
 
-  /* =========================
-     RENDER
-  ==========================*/
   if (loading) return <div className="loading">Cargando curso...</div>;
   if (!course) return null;
 
@@ -133,28 +138,32 @@ export default function CourseDetail() {
           course.lessons.map((lesson) => (
             <div
               key={lesson.id}
+              id={`lesson-${lesson.id}`}
               className={`lesson-item ${selected === lesson.id ? "active" : ""}`}
             >
 
               <div className="lesson-meta">
 
-                <h3 onClick={() => setSelected(lesson.id)}>
+                <h3 onClick={() => handleSelectLesson(lesson.id)}>
                   {lesson.title}
                 </h3>
 
                 <div className="lesson-actions">
 
                   <button
-                    onClick={() => setSelected(lesson.id)}
+                    onClick={() => handleSelectLesson(lesson.id)}
                     className="btn-small"
                   >
                     Ver
                   </button>
 
                   {completedIds.has(Number(lesson.id)) ? (
-                    <button className="btn-small" disabled>
-                      Completada ✓
-                    </button>
+                    <div style={{ position: 'relative' }}>
+                      <button className="btn-small" disabled>
+                        Completada ✓
+                      </button>
+                      <div className="progress-indicator">✓</div>
+                    </div>
                   ) : (
                     <button
                       onClick={() => handleComplete(lesson.id)}
@@ -167,9 +176,6 @@ export default function CourseDetail() {
                 </div>
               </div>
 
-              {/* =====================
-                 CONTENIDO LECCION
-              ======================*/}
               {selected === lesson.id && (
                 <div className="lesson-content">
 
@@ -187,9 +193,6 @@ export default function CourseDetail() {
                     </div>
                   )}
 
-                  {/* =====================
-                     EXAMEN PRO
-                  ======================*/}
                   <div className="lesson-exams">
 
                     <div className="lesson-exam-header">

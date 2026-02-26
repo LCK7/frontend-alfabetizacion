@@ -20,8 +20,24 @@ export default function ExamForm({ onSubmit, selectedCourse, lessons }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Generar opciones con IDs únicos y mapear respuesta correcta
+    const options = [
+      { id: "opt-a", text: form.option_a },
+      { id: "opt-b", text: form.option_b },
+      { id: "opt-c", text: form.option_c }
+    ].filter(opt => opt.text.trim()); // Filtrar opciones vacías
+
+    // Mapear respuesta correcta ("a", "b", "c") al ID real de la opción
+    const correctAnswerMap = {
+      "a": "opt-a",
+      "b": "opt-b", 
+      "c": "opt-c"
+    };
+
     onSubmit({
-      ...form,
+      question: form.question,
+      options,
+      correctAnswer: correctAnswerMap[form.correct_option],
       courseId: selectedCourse.id,
       lessonId: form.lessonId || null
     });

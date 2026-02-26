@@ -1,4 +1,5 @@
 import { useEditor, EditorContent } from "@tiptap/react";
+import { useEffect } from "react";
 import StarterKit from "@tiptap/starter-kit";
 import "./LessonEditorNotion.css";
 
@@ -6,13 +7,25 @@ export default function LessonEditorNotion({ value, onChange }) {
     const editor = useEditor({
         extensions: [StarterKit],
         content: value || "",
-        onUpdate: ({ editor }) => onChange(editor.getHTML()),
+        onUpdate: ({ editor }) => {
+            const html = editor.getHTML();
+            console.log('Contenido actualizado en editor:', html);
+            onChange(html);
+        },
         editorProps: {
             attributes: {
                 class: "notion-editor",
             },
         },
     });
+
+    // Sincronizar editor cuando cambia el value (edición)
+    useEffect(() => {
+        if (editor && value && editor.getHTML() !== value) {
+            editor.commands.setContent(value);
+            console.log('Editor sincronizado con:', value);
+        }
+    }, [value, editor]);
 
     if (!editor) return null;
 

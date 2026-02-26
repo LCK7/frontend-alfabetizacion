@@ -1,10 +1,12 @@
 .lesson-form {
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  border: 2px solid #2196F3;
+  background: white;
+  border: 2px solid #e0e0e0;
   border-radius: 10px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .form-group {
@@ -16,7 +18,7 @@
   color: #333;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 .form-group input,
@@ -26,10 +28,11 @@
   padding: 0.8rem;
   border: 2px solid #ddd;
   border-radius: 6px;
-  font-size: 0.95rem;
+  font-size: 16px;
   font-family: inherit;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   box-sizing: border-box;
+  min-height: 40px;
 }
 
 .form-group input:focus,
@@ -65,6 +68,87 @@
 
 .btn-submit:active {
   transform: translateY(0);
+}
+
+/* Estilos para el editor Notion */
+.lesson-form-editor {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: #fafafa;
+  min-height: 350px;
+}
+
+.lesson-form-editor .notion-editor-container {
+  max-width: 100%;
+}
+
+.lesson-form-editor .notion-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  background: white;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 1rem;
+}
+
+.lesson-form-editor .notion-toolbar button {
+  padding: 0.6rem 1rem;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  min-width: 45px;
+  transition: all 0.2s ease;
+}
+
+.lesson-form-editor .notion-toolbar button:hover {
+  background: #f0f0f0;
+  border-color: #2196F3;
+  color: #2196F3;
+}
+
+.lesson-form-editor .notion-editor {
+  min-height: 250px;
+  font-size: 16px;
+  line-height: 1.6;
+  padding: 1rem;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+.lesson-form-editor .notion-editor h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0.8rem 0 0.4rem 0;
+}
+
+.lesson-form-editor .notion-editor h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0.6rem 0 0.3rem 0;
+}
+
+.lesson-form-editor .notion-editor h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0.5rem 0 0.2rem 0;
+}
+
+.lesson-form-editor .notion-editor p {
+  margin-bottom: 1rem;
+}
+
+.lesson-form-editor .notion-editor ul,
+.lesson-form-editor .notion-editor ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .tiptap-editor {
